@@ -17,43 +17,51 @@ class BusNearbyView extends StatelessWidget {
       builder: (context, model, child) => Container(
         child: model.isBusy || model.nearByBusStopList.isEmpty
             ? CircularProgressIndicator()
-            : SingleChildScrollView(
+            : CustomScrollView(
                 physics: ScrollPhysics(),
-                child: Column(
-                  children: [
-                    Container(
-                      child: FlareCacheBuilder(
-                        [asset],
-                        builder: (BuildContext context, bool isWarm) {
-                          return Container(
-                            width: MediaQuery.of(context).size.width,
-                            height: 320,
-                            child: FlareActor.asset(
-                              asset,
-                              alignment: Alignment.center,
-                              fit: BoxFit.fitHeight,
-                              animation: 'Loop',
-                            ),
-                          );
-                        },
+                slivers: [
+                  SliverAppBar(
+                    title: Text('Nearby Buses'),
+                    pinned: true,
+                    floating: false,
+                    snap: false,
+                    expandedHeight: 289.0,
+                    flexibleSpace: FlexibleSpaceBar(
+                      background: Container(
+                        height: 320,
+                        child: FlareCacheBuilder(
+                          [asset],
+                          builder: (BuildContext context, bool isWarm) {
+                            return Container(
+                              width: MediaQuery.of(context).size.width,
+                              height: 320,
+                              child: FlareActor.asset(
+                                asset,
+                                alignment: Alignment.center,
+                                fit: BoxFit.cover,
+                                animation: 'Loop',
+                              ),
+                            );
+                          },
+                        ),
                       ),
                     ),
-                    Container(
-                      child: ListView.builder(
-                        physics: NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        padding: const EdgeInsets.all(0),
-                        itemCount: model.nearByBusStopList.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return BusStopView(
-                            busStopModel: model.nearByBusStopList[index],
-                            key: ValueKey<String>('busStopCard-$index'),
-                          );
-                        },
-                      ),
-                    )
-                  ],
-                ),
+                  ),
+                  SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (BuildContext context, int index) {
+                        if (index >= model.nearByBusStopList.length) {
+                          return null;
+                        }
+
+                        return BusStopView(
+                          busStopModel: model.nearByBusStopList[index],
+                          key: ValueKey<String>('busStopCard-$index'),
+                        );
+                      },
+                    ),
+                  ),
+                ],
               ),
       ),
       viewModelBuilder: () => BusNearByStreamViewModel(),
