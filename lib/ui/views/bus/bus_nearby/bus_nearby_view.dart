@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lta_datamall_flutter/ui/views/bus/bus_stop/bus_stop_view.dart';
 import 'package:stacked/stacked.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flare_flutter/flare_cache_builder.dart';
 import 'package:flutter/services.dart';
@@ -16,7 +17,7 @@ class BusNearbyView extends StatelessWidget {
     return ViewModelBuilder<BusNearByStreamViewModel>.reactive(
       builder: (context, model, child) => Container(
         child: model.isBusy || model.nearByBusStopList.isEmpty
-            ? CircularProgressIndicator()
+            ? Center(child: CircularProgressIndicator())
             : CustomScrollView(
                 physics: ScrollPhysics(),
                 slivers: [
@@ -48,17 +49,23 @@ class BusNearbyView extends StatelessWidget {
                     ),
                   ),
                   SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (BuildContext context, int index) {
-                        if (index >= model.nearByBusStopList.length) {
-                          return null;
-                        }
-
-                        return BusStopView(
-                          busStopModel: model.nearByBusStopList[index],
-                          key: ValueKey<String>('busStopCard-$index'),
-                        );
-                      },
+                    delegate: SliverChildListDelegate(
+                      List.generate(
+                        model.nearByBusStopList.length,
+                        (index) => AnimationConfiguration.staggeredList(
+                          position: index,
+                          duration: const Duration(milliseconds: 200),
+                          child: SlideAnimation(
+                            verticalOffset: 20.0,
+                            child: FadeInAnimation(
+                              child: BusStopView(
+                                busStopModel: model.nearByBusStopList[index],
+                                key: ValueKey<String>('busStopCard-$index'),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ],
