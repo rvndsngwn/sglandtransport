@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lta_datamall_flutter/ui/views/bus/bus_stop/bus_stop_view.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:lta_datamall_flutter/ui/views/shared/search_bar/search_bar_view.dart';
 import 'package:stacked/stacked.dart';
 
